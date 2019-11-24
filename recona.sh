@@ -13,13 +13,16 @@ echo -e ${BLK}"-----------------------------------------------------------------
 
 #options for user
 
-echo -e ${LPURP}"      :::::::::  :::::::::: ::::::::   ::::::::  ::::    :::     :::  
+echo -e ${RED}"      :::::::::  :::::::::: ::::::::   ::::::::  ::::    :::     :::  
      :+:    :+: :+:       :+:    :+: :+:    :+: :+:+:   :+:   :+: :+: 
     +:+    +:+ +:+       +:+        +:+    +:+ :+:+:+  +:+  +:+   +:+ 
    +#++:++#:  +#++:++#  +#+        +#+    +:+ +#+ +:+ +#+ +#++:++#++: 
   +#+    +#+ +#+       +#+        +#+    +#+ +#+  +#+#+# +#+     +#+  
  #+#    #+# #+#       #+#    #+# #+#    #+# #+#   #+#+# #+#     #+#   
 ###    ### ########## ########   ########  ###    #### ###     ###${NC}
+
+
+Author - 1d8
 "
 
 
@@ -31,6 +34,7 @@ echo "
 [4] - Simple Ping
 [5] - DNS record pull
 [6] - Start a listener
+[7] - Enumerate subdomains (Sublist3r)
 "
 
 echo -e ${BLK}"-------------------------------------------------------------------------"${NC}
@@ -47,9 +51,20 @@ do
 	read userchoice
 
 	if [ $userchoice -eq '0' ] ; then
-		echo "Enter Target: "
-		read target
-		nmap -A -T4 -p- $target &
+		echo "
+		[0] - Single Target
+		[1] - List of targets
+		"
+		read choice
+		if [ $choice -eq '0' ] ; then
+			echo "Enter target IP"
+			read targetip
+			nmap -A -T4 $targetip
+		elif [ $choice -eq '1' ] ; then
+			echo "Enter txt file name [be sure you're in the same dir as the txt file]"
+			read txtfile
+			nmap -iL $txtfile -T4
+		fi
 	elif [ $userchoice -eq '1' ]
 	then
 		echo "Enter Target Domain:"
@@ -82,6 +97,13 @@ do
 		echo "Enter port: "
 		read port
 		netcat -lvnp $port
+	elif [ $userchoice -eq '7' ]
+	then
+		echo "Enter domain"
+		read domain
+		echo "Enter file to save to"
+		read filename
+		python /root/Downloads/scripts/sublist3r/sublist3r.py -d $domain -o $filename.txt
 	else
 		echo -e ${RED}"▁ ▂ ▄ ▅ ▆ ▇ █ EXITING...  █ ▇ ▆ ▅ ▄ ▂ ▁"${NC}
 		exit
